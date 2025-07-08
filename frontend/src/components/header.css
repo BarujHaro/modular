@@ -1,0 +1,23 @@
+.headerClass {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background-color: transparent;
+
+}
+
+.headerClass a {
+  text-decoration: none; 
+  color: black; 
+  font-weight: 500;
+  font-size: 22px;
+  font-weight: bold;
+  transition: color 0.2s;
+  color: #3F72AF;
+}
+
+.headerClass a:hover {
+  color: #112D4E; 
+}
