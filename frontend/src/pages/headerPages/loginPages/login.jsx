@@ -44,21 +44,21 @@ const Login = () => {
 }, [errors]);
 
     return (
-        <div className="contenido">
-            <div className="formulario">
-                <div className='field'>
+        <div className="login-contenido">
+            <div className="login-formulario">
+                <div className='login-field'>
                     <h2>Login</h2>
                 </div>
                 
                 <form onSubmit={LoginEmail}>
 
 
-                        <div className='field'>
-                            <label className='label'>Email</label>
+                        <div className='login-field'>
+                            <label className='login-label'>Email</label>
                             <div className='control'>
                                 <input
                                 type="text"  
-                                className='input'
+                                className='login-input'
                                 value={email}
                                 onChange={(e)=>setEmail(e.target.value)}
                                 placeholder="xxxxx@gmail.com"
@@ -67,12 +67,12 @@ const Login = () => {
                             </div>
                         </div>
 
-                        <div className='field'>
-                            <label className='label'>Contraseña</label>
+                        <div className='login-field'>
+                            <label className='login-label'>Contraseña</label>
                             <div className='control'>
                                 <input
                                 type="password"  
-                                className='input'
+                                className='login-input'
                                 value={password}
                                 onChange={(e)=>setPass(e.target.value)}
                                 placeholder="Pass"
@@ -83,8 +83,8 @@ const Login = () => {
 
 
 
-                             <div className='field'>
-                <button type="submit" className='boton'>
+                             <div className='login-field'>
+                <button type="submit" className='login-boton'>
                     Iniciar sesión
                 </button>
             </div>
@@ -104,17 +104,17 @@ const Login = () => {
                         </div>
 
                                              {errors && (
-                        <p className="message">Credenciales Incorrectas</p>
+                        <p className="login-message">Credenciales Incorrectas</p>
                                     
                         )}
                         {mensaje && (
-                        <p className="message">{mensaje}</p>
+                        <p className="login-message">{mensaje}</p>
                         )}
 
 
-<div className='field'>
+<div className='login-field'>
     <button 
-        className='boton'
+        className='login-boton'
         onClick={() => navigate('/register')}  
     >
         Registrarse

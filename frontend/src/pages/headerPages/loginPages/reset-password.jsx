@@ -47,16 +47,16 @@ function ResetPassword(){
   };
       
           return (
-              <div className='contenido'>
-                <div className='formulario'>
+              <div className='login-contenido'>
+                <div className='login-formulario'>
 <h2>Resetear contraseña</h2>
                   <form onSubmit={ResetPass}>
-                        <div className='field'>
-                            <label className='label'>Contraseña</label>
+                        <div className='login-field'>
+                            <label className='login-label'>Contraseña</label>
                             <div className='control'>
                                 <input
                                 type="password"  
-                                className='input'
+                                className='login-input'
                                 value={pass}
                                 onChange={(e)=>setPass(e.target.value)}
             
@@ -65,12 +65,12 @@ function ResetPassword(){
                             </div>
                         </div>
 
-                        <div className='field'>
-                            <label className='label'>Confirma contraseña</label>
+                        <div className='login-field'>
+                            <label className='login-label'>Confirma contraseña</label>
                             <div className='control'>
                                 <input
                                 type="password"  
-                                className='input'
+                                className='login-input'
                                 value={passC}
                                 onChange={(e)=>setPassC(e.target.value)}
             
@@ -79,10 +79,10 @@ function ResetPassword(){
                             </div>
                         </div>
 
-                        <div className='field'>
+                        <div className='login-field'>
                             <button 
                                 type="submit" 
-                                className='boton'
+                                className='login-boton'
                                 
                             >
                             Cambiar
@@ -92,7 +92,7 @@ function ResetPassword(){
 
                   </form>
                  {mensaje && 
-  <p className="message">{mensaje}</p>
+  <p className="login-message">{mensaje}</p>
 }
                 </div>
                   

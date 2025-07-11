@@ -62,7 +62,7 @@ const Register = () => {
         
         try{
           
-            ////Aqui el error
+            
             const response = await axios.post(`${currentUrl}/auth/register`, {
             firstName,
             lastName,
@@ -135,13 +135,13 @@ const Register = () => {
 
 
     return (
-        <div className="contenido">
-            <div className="formulario">
-                <div className='field'>
+        <div className="login-contenido">
+            <div className="login-formulario">
+                <div className='login-field'>
                         <h2>Registro</h2>
                     </div>
                         {registrationSuccess ? (
-                            <div className="message">
+                            <div className="login-message">
                                 <p>¡Registro exitoso!</p>
                                 <p>Hemos enviado un correo de verificación</p>
                                 <p>Ingresa los caracteres para verificar la cuenta:</p>
@@ -149,22 +149,22 @@ const Register = () => {
                                 <input
                                     type="text"
                                     maxLength={5}
-                                    className="input"
+                                    className="login-input"
                                     value={verificationToken}
                                     onChange={(e) => setVerificationToken(e.target.value)}
                                     required
                                 />
 
-                                <button className="boton" onClick={verifyToken}>
+                                <button className="login-boton" onClick={verifyToken}>
                                     Verificar cuenta
                                 </button>
 
                                     {tokenError && (
-                                        <p className="message">El código ingresado es incorrecto. Intenta de nuevo.</p>
+                                        <p className="login-message">El código ingresado es incorrecto. Intenta de nuevo.</p>
                                     )}
 
                                     {finalMessage && (
-                                        <div className="message">
+                                        <div className="login-message">
                                             {finalMessage}
                                         </div>
                                         )}
@@ -172,28 +172,28 @@ const Register = () => {
                     ) : (
                     <form onSubmit={VerifyEmail}>
                             {errors.server && (
-                        <div className="message">
+                        <div className="login-message">
                             {errors.server}
                         </div>
                         )}
                         {errors.email && (
-                        <div className="message">
+                        <div className="login-message">
                             <p>{errors.email}</p>
                         </div>    
                         )}
             
                         {errors.password && (
-                            <div className="message">
+                            <div className="login-message">
                                 <p>{errors.password}</p>
                             </div>
                         )}
 
-                        <div className='field'>
-                            <label className='label'>Nombre</label>
+                        <div className='login-field'>
+                            <label className='login-label'>Nombre</label>
                             <div className='control'>
                                 <input
                                 type="text"
-                                className='input'
+                                className='login-input'
                                 value={firstName}
                                 onChange={(e)=>setFirstName(e.target.value)}
                                 placeholder="Nombre"
@@ -202,12 +202,12 @@ const Register = () => {
                             </div>
                         </div>
 
-                        <div className='field'>
-                            <label className='label'>Apellidos</label>
+                        <div className='login-field'>
+                            <label className='login-label'>Apellidos</label>
                             <div className='control'>
                                 <input
                                 type="text"
-                                className='input'
+                                className='login-input'
                                 value={lastName}
                                 onChange={(e)=>setLastName(e.target.value)}
                                 placeholder="Apellidos"
@@ -216,12 +216,12 @@ const Register = () => {
                             </div>
                         </div>
 
-                        <div className='field'>
-                            <label className='label'>Email</label>
+                        <div className='login-field'>
+                            <label className='login-label'>Email</label>
                             <div className='control'>
                                 <input
                                 type="text"
-                                className='input'
+                                className='login-input'
                                 value={email}
                                 onChange={(e)=>setEmail(e.target.value)}
                                 placeholder="Email@gmail.com"
@@ -230,12 +230,12 @@ const Register = () => {
                             </div>
                         </div>                    
 
-                        <div className='field'>
-                            <label className='label'>Contraseña</label>
+                        <div className='login-field'>
+                            <label className='login-label'>Contraseña</label>
                             <div className='control'>
                                 <input
                                 type="password"  
-                                className='input'
+                                className='login-input'
                                 value={password}
                                 onChange={(e)=>setPass(e.target.value)}
                                 placeholder="Pass"
@@ -244,10 +244,10 @@ const Register = () => {
                             </div>
                         </div>
 
-                        <div className='field'>
+                        <div className='login-field'>
                             <button 
                                 type="submit" 
-                                className='boton'
+                                className='login-boton'
                                 disabled={isSubmitting}
                             >
                                 {isSubmitting ? 'Registrando...' : 'Registrar'}

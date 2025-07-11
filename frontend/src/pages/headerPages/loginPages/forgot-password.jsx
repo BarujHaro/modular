@@ -29,18 +29,18 @@ const ForgotPassword = () => {
   };
       
           return (
-              <div className="contenido">
+              <div className="login-contenido">
                   
 
-<div className='formulario'>
+<div className='login-formulario'>
     <h2>Recuperación de contraseña</h2>
 <form onSubmit={SendMail}>
-                        <div className='field'>
-                            <label className='label'>Email</label>
+                        <div className='login-field'>
+                            <label className='login-label'>Email</label>
                             <div className='control'>
                                 <input
                                 type="text"  
-                                className='input'
+                                className='login-input'
                                 value={email}
                                 onChange={(e)=>setEmail(e.target.value)}
                                 placeholder="xxxxxx@gmail.com"
@@ -50,10 +50,10 @@ const ForgotPassword = () => {
                         </div>
 
 
-                        <div className='field'>
+                        <div className='login-field'>
                             <button 
                                 type="submit" 
-                                className='boton'
+                                className='login-boton'
                                 
                             >
                             Recuperar
@@ -64,7 +64,7 @@ const ForgotPassword = () => {
                   </form>
 
                   {mensaje && (
-                    <div className='message'>
+                    <div className='login-message'>
                                             {mensaje}
                                         </div>
                   )}

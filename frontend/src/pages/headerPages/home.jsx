@@ -12,7 +12,11 @@ function Home() {
         <div>
             <h1>Dashboard / Home</h1>
             {user && (
-                <p>{user.email}</p>
+                <div>
+                    <p>{user.email}</p>
+
+                </div>
+                
             )}
         
         </div>
