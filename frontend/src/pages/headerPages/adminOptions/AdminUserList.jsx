@@ -22,10 +22,7 @@ const AdminUserList = () => {
         if (user?.role === "admin") fetchUsers(); 
     }, [token, user?.role]);
 
-    if (user?.role !== "admin") {
-        return <p>Acceso restringido a administradores.</p>;
-    }
-
+ 
 
     const updateRole = async (userId, newRole) => {
     

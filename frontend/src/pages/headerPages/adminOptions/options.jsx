@@ -1,10 +1,21 @@
-
+import { useContext, useEffect  } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../../components/AuthContext.jsx";
 import {  NavLink, Outlet } from "react-router-dom";
 
 const Options = () => {
+  const { user} = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user || user.role !== "admin") {
+      navigate("/home"); 
+    }
+  }, [user, navigate]);
+
   return (
     <div className="options-container">
-      <h1 className="options-title">Mi Perfil</h1>
+      
 
       {/* Navegación tipo tabs */}
         <nav className="options-tabs">

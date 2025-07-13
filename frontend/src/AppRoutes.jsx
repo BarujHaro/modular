@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Home from "./pages/headerPages/home.jsx";
 import Search from "./pages/headerPages/search.jsx";
@@ -42,7 +42,7 @@ export function AppRoutes(){
           {/*Rutas relacionadas al admin*/}
           <Route path="options" element={<Options />}>
             <Route index element={<AdminUserList />} />
-            <Route path="AdminUserList" element={<AdminUserList />} />
+            <Route path="/options/info" element={<AdminUserList />} />
         
           </Route>
           {/*Rutas relacionadas a login*/}
@@ -54,6 +54,8 @@ export function AppRoutes(){
 
           <Route path="/contact" element={<Contact />}/>
           <Route path="/FAQ" element={<FAQ />}/>
+
+          <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
     );
 }
