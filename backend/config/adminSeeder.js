@@ -1,36 +1,39 @@
-import { v4 as uuidv4 } from 'uuid';
-import bcrypt from 'bcryptjs';
-import User from '../models/UserModel.js';
-import dotenv from 'dotenv';
+// backend/config/adminSeeder.js
+import bcrypt from "bcryptjs";
+import { v4 as uuidv4 } from "uuid";
+import dotenv from "dotenv";
 dotenv.config();
 
+import User from "../models/UserModel.js";
 
-export const createAdminUser = async () => {
-  //const adminEmail = 'admin@gmail.com';
- const adminEmail = process.env.ADMIN_NAME;
-  // Verificar si ya existe
-  const existingAdmin = await User.findOne({ where: { role: 'admin'  } });
-  if (existingAdmin) {
-    console.log('Admin ya existe.');
+export async function createAdminUser() {
+  const adminEmail = process.env.ADMIN_NAME;
+  const adminPassword = process.env.ADMIN_PASS;
+  const firstName = process.env.ADMIN_FN || "Admin";
+  const lastName  = process.env.ADMIN_LN || "Root";
+
+  if (!adminEmail || !adminPassword) {
+    console.log("[seed] ADMIN_NAME/ADMIN_PASS no definidos; se omite usuario de prueba.");
     return;
   }
 
-  // Crear contraseña segura
-  const salt = await bcrypt.genSalt(10);
-  //const hashedPassword = await bcrypt.hash('admin123', salt);
-  const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASS, salt);
-  const verificationToken = uuidv4();
-  // Crear el usuario admin
+  const existing = await User.findOne({ where: { email: adminEmail } });
+  if (existing) {
+    console.log(`[seed] Usuario de prueba ya existe: ${adminEmail}`);
+    return;
+  }
+
+  const hashed = await bcrypt.hash(adminPassword, 10);
+
   await User.create({
-    firstName: process.env.ADMIN_FN,
-    lastName: process.env.ADMIN_LN,
+    firstName,
+    lastName,
     email: adminEmail,
-    password: hashedPassword,
-    role: 'admin',
+    password: hashed,
+    role: "user",         // NO admin
     status: true,
-    emailVerified: true,
-    emailToken: verificationToken,
+    emailToken: uuidv4(), // este campo SÍ existe en tu modelo
   });
 
-  console.log('Usuario admin creado.');
-};
+  console.log(`[seed] Usuario de prueba creado: ${adminEmail} (role=user)`);
+}

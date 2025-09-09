@@ -8,7 +8,7 @@ import {
     updatePass,
     softDeleteUser
 } from "../controllers/UserController.js";
-import { verifyToken, requireAdmin } from '../middleware/verifytoken.js';
+import verifyToken,{ requireAdmin } from '../middleware/verifytoken.js';
 //se crea instancia router
 /**
  * path: Especifica la URL relativa que debe coincidir para que se ejecute la ruta. En este caso, /users.

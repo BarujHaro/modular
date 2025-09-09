@@ -1,131 +1,92 @@
-import  { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import './style/login.css';
-import { AuthContext } from "../../../components/AuthContext.jsx"; 
+import "./style/login.css"; // Mantén tu hoja; abajo agregamos estilos nuevos
+import { AuthContext } from "../../../components/AuthContext.jsx";
 
 const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPass] = useState("");
-    const [errors, setErrors] = useState(false);
-    const [mensaje, setMensaje] = useState(false);
-    const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPass] = useState("");
+  const [errors, setErrors] = useState(null);
+  const [mensaje, setMensaje] = useState(null);
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
-    const { login } = useContext(AuthContext); 
-
-    const LoginEmail = async (e) => {
-        e.preventDefault();
-        try {
-            setErrors(false);
-            const res = await axios.post("http://localhost:5000/auth/login", {
-                email,
-                password,
-            });
-
-            login(res.data.user, res.data.token); 
-            setMensaje("Login exitoso, redirigiendo a pagina principal");
-            setTimeout(() => {
-            navigate("/home");
-        }, 2000);
-        } catch (err) {
-            console.log("Error de login", err.response?.data);
-            setErrors(true);
-        }
-    };
-
-    useEffect(() => {
-  if (errors) {
-    const timer = setTimeout(() => {
-      setErrors(false);
-    }, 3000); 
-
-    return () => clearTimeout(timer); 
-  }
-}, [errors]);
-
-    return (
-        <div className="login-contenido">
-            <div className="login-formulario">
-                <div className='login-field'>
-                    <h2>Login</h2>
-                </div>
-                
-                <form onSubmit={LoginEmail}>
+  const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/$/, "");
 
 
-                        <div className='login-field'>
-                            <label className='login-label'>Email</label>
-                            <div className='control'>
-                                <input
-                                type="text"  
-                                className='login-input'
-                                value={email}
-                                onChange={(e)=>setEmail(e.target.value)}
-                                placeholder="xxxxx@gmail.com"
-                                required
-                                />
-                            </div>
-                        </div>
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setErrors(null);
+    setMensaje(null);
+    /*if((email === "admin" || email === "admin@admin.com")&& password === "admin"){
+      login({email,role:"admin",name:"admin"});
+      navigate("/home");
+      return;
+    }*/
 
-                        <div className='login-field'>
-                            <label className='login-label'>Contraseña</label>
-                            <div className='control'>
-                                <input
-                                type="password"  
-                                className='login-input'
-                                value={password}
-                                onChange={(e)=>setPass(e.target.value)}
-                                placeholder="Pass"
-                                required
-                                />
-                            </div>
-                        </div>
+    try {
+      const { data } = await axios.post(`${API_BASE}/auth/login`, { email, password });
+      await login(data.user, data.token); // lógica del original
+      setMensaje("Autenticación exitosa");
+      navigate("/home");
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Error al iniciar sesión. Intenta de nuevo.";
+      setErrors(msg);
+    }
+  };
 
-
-
-                             <div className='login-field'>
-                <button type="submit" className='login-boton'>
-                    Iniciar sesión
-                </button>
-            </div>
-                        
-
-                        
-
-                        
-
-   
-                </form>
-
-                    <div >
-                        <Link to="/forgot-password" className="forgot-link">
-                            ¿Olvidaste la contraseña?
-                        </Link>
-                        </div>
-
-                                             {errors && (
-                        <p className="login-message">Credenciales Incorrectas</p>
-                                    
-                        )}
-                        {mensaje && (
-                        <p className="login-message">{mensaje}</p>
-                        )}
-
-
-<div className='login-field'>
-    <button 
-        className='login-boton'
-        onClick={() => navigate('/register')}  
-    >
-        Registrarse
-    </button>
-</div>
-
-            </div>
-
+  return (
+    <div className="login-page theme-dark">
+      <div className="login-card">
+        <div className="login-header">
+          <h2>Iniciar sesión</h2>
+          <p className="sub">Accede a tu cuenta para continuar</p>
         </div>
-        
 
-    );
-}
+        {errors && <div className="alert error">{errors}</div>}
+        {mensaje && <div className="alert ok">{mensaje}</div>}
+
+        <form onSubmit={onSubmit} className="login-form">
+          <div className="form-field">
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              className="form-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="usuario@correo.com"
+              required
+            />
+          </div>
+
+          <div className="form-field">
+            <label className="form-label">Contraseña</label>
+            <input
+              type="password"
+              className="form-input"
+              value={password}
+              onChange={(e) => setPass(e.target.value)}
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn-primary full">
+            Iniciar sesión
+          </button>
+        </form>
+
+        <div className="login-footer">
+          <span>¿No tienes cuenta?</span>
+          <button type="button" className="btn-link" onClick={() => navigate("/register")}>
+            Regístrate
+          </button>
+          {/* <Link to="/register" className="btn-link">Regístrate</Link> */}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default Login;

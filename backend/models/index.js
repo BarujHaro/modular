@@ -1,42 +1,87 @@
-import { Sequelize } from "sequelize";
-import db from "../config/database.js";
+// backend/models/index.js
+import sequelize from "../config/database.js";
 
-// Importa los modelos como están actualmente (sin cambiar su estructura)
+// Modelos base
 import User from "./UserModel.js";
-import Resource from "./ResourceModel.js";
-import Category from "./CategoryModel.js";
-import ResourceCategory from "./ResourceCategoryModel.js";
-import Rating from "./RatingModel.js";
-import Favorite from "./FavoriteModel.js";
 
-// Espera a que los modelos se carguen antes de asociarlos
-const setupAssociations = () => {
-  // Verifica que los modelos estén definidos
-  if (User && Resource) {
-    User.associate?.({ Resource, Rating, Favorite, Category });
-    Resource.associate?.({ User, Rating, Favorite, Category, ResourceCategory });
-    Category.associate?.({ Resource, ResourceCategory });
-  }
-};
-//Sincronizacion del modelo
-const syncModels = async () => {
+// Taxonomía
+import Tag from "./Tag.js";
+import Roadmap from "./Roadmap.js";
+import RoadmapTag from "./RoadmapTag.js";
 
-  try {
-    await db.sync({ alter: true }); //crea tablas si no existen y modifica las columnas si hay cambios en el modelo
-    console.log("-------Modelos sincronizados");
-  } catch (error) {
-    console.error("-----Error al sincronizar modelos:", error);
-    throw error;
-  }
+// Likes (IMPORTA y EXPORTA estos dos)
+import UserLikedTag from "./UserLikedTag.js";
+import UserLikedRoadmap from "./UserLikedRoadmap.js";
+
+export const setupAssociations = () => {
+  // Roadmap ↔ Tag (N–N) sin FKs en MySQL (constraints:false) para estabilizar en dev
+  Roadmap.belongsToMany(Tag, {
+    through: RoadmapTag,
+    foreignKey: "roadmapId",
+    otherKey: "tagId",
+    constraints: false,
+  });
+  Tag.belongsToMany(Roadmap, {
+    through: RoadmapTag,
+    foreignKey: "tagId",
+    otherKey: "roadmapId",
+    constraints: false,
+  });
+
+  // User ↔ Tag (likes)
+  User.belongsToMany(Tag, {
+    through: UserLikedTag,
+    foreignKey: "userId",
+    otherKey: "tagId",
+    as: "likedTags",
+    constraints: false,
+  });
+  Tag.belongsToMany(User, {
+    through: UserLikedTag,
+    foreignKey: "tagId",
+    otherKey: "userId",
+    constraints: false,
+  });
+
+  // User ↔ Roadmap (likes)
+  User.belongsToMany(Roadmap, {
+    through: UserLikedRoadmap,
+    foreignKey: "userId",
+    otherKey: "roadmapId",
+    as: "likedRoadmaps",
+    constraints: false,
+  });
+  Roadmap.belongsToMany(User, {
+    through: UserLikedRoadmap,
+    foreignKey: "roadmapId",
+    otherKey: "userId",
+    constraints: false,
+  });
 };
-//Se exporta todo
-export { 
+
+export const syncModels = async () => {
+  await sequelize.query("SET FOREIGN_KEY_CHECKS=0;");
+
+  // Padres
+  await User.sync();
+  await Tag.sync();
+  await Roadmap.sync();
+
+  // Puente + likes
+  await RoadmapTag.sync();
+  await UserLikedTag.sync();
+  await UserLikedRoadmap.sync();
+
+  await sequelize.query("SET FOREIGN_KEY_CHECKS=1;");
+};
+
+// 👇 ahora sí exporta también los “likes”
+export {
+  sequelize,
   User,
-  Resource,
-  Category,
-  ResourceCategory,
-  Rating,
-  Favorite,
-  setupAssociations,
-  syncModels
+  Tag,
+  Roadmap,
+  RoadmapTag,
+  UserLikedTag,
+  UserLikedRoadmap,
 };

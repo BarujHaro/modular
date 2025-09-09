@@ -13,7 +13,10 @@ const db = new Sequelize(
     process.env.DB_PASS,
     {
         host: process.env.DB_HOST,
-        dialect: process.env.DB_DIALECT
+        port: process.env.DB_PORT || 3306,
+        dialect: process.env.DB_DIALECT || "mysql",
+        logging: false,
+
 });
 /**conexion de la base de datos
  * modular en este caso es el nombre d ela base de datos

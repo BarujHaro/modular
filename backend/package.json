@@ -4,14 +4,15 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@getbrevo/brevo": "^2.5.0",
+    "@getbrevo/brevo": "^3.0.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -22,6 +23,7 @@
     "pg": "^8.15.6",
     "sequelize": "^6.37.7",
     "sib-api-v3-sdk": "^8.5.0",
+    "slugify": "^1.6.6",
     "uuid": "^11.1.0"
   }
 }
