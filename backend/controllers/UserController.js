@@ -4,7 +4,7 @@ import User from "../models/UserModel.js"; //Importa el modelo de los usuarios
 // ========== CREAR USUARIO (cuando token es correcto) ==========
 export const createUser = async(req, res) =>{
     try{
-                
+                console.log(req.headers);
         //verifica que los campos esten llenos por parte del backend
         // Destructure all needed fields from req.body
         const { firstName, lastName, email, password, emailToken } = req.body;

@@ -5,9 +5,9 @@ import './style/login.css';
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
     const [mensaje, setMensaje] = useState("");
+    const [errorMensaje, setErrorMensaje] = useState("");
 
-    const localUrl = "http://localhost:5000";
-    const currentUrl = localUrl;
+    const currentUrl = "http://localhost:5000/api";
 
   const SendMail = async (e) => {
     e.preventDefault();
@@ -23,24 +23,37 @@ const ForgotPassword = () => {
         setMensaje("El correo se ha enviado con exito");
     }catch(error){
             console.error("Error completo:", error);
-            setMensaje("Error al enviar correo");
+            setErrorMensaje("Error al enviar correo");
     
     }
-  };
+  }; 
       
           return (
-              <div className="login-contenido">
+              <div className="login-page theme-dark">
                   
 
-<div className='login-formulario'>
-    <h2>Recuperación de contraseña</h2>
-<form onSubmit={SendMail}>
-                        <div className='login-field'>
-                            <label className='login-label'>Email</label>
+                <div className='login-card'>
+                    <h2 className="login-title">Recuperación de contraseña</h2>
+
+                  {mensaje && (
+                    <div className="alert ok">
+                                            {mensaje}
+                                        </div>
+                  )}
+
+                    {errorMensaje && (
+                    <div className="alert error">
+                                            {errorMensaje}
+                                        </div>
+                  )}
+
+                    <form onSubmit={SendMail}>
+                        <div className='form-field'>
+                            <label className='form-label'>Email</label>
                             <div className='control'>
                                 <input
                                 type="text"  
-                                className='login-input'
+                                className='form-input'
                                 value={email}
                                 onChange={(e)=>setEmail(e.target.value)}
                                 placeholder="xxxxxx@gmail.com"
@@ -50,11 +63,11 @@ const ForgotPassword = () => {
                         </div>
 
 
-                        <div className='login-field'>
+                        <div className='form-field'>
                             <button 
                                 type="submit" 
-                                className='login-boton'
-                                
+                                className="btn-primary full"
+                                style={{ margin: '20px 0' }}
                             >
                             Recuperar
                             </button>
@@ -63,11 +76,7 @@ const ForgotPassword = () => {
 
                   </form>
 
-                  {mensaje && (
-                    <div className='login-message'>
-                                            {mensaje}
-                                        </div>
-                  )}
+
 
 </div>
 

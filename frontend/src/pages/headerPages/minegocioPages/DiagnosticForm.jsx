@@ -57,14 +57,16 @@ const DiagnosticForm= () => {
         setScore(res.data.overall.score);
         
         setExplain(res.data.details);
-        console.log(res.data);
-        return res;
+       
+        
+        return {score: res.data.overall.score};
     } catch (error) {
       console.error('Error al calcular en el sistema experto:', error)
     }
   }
 
   const TreeDiagnosis = async() => {
+    
     try{
       const response = await axios.post(
         "http://localhost:5000/model/predict",
@@ -75,22 +77,39 @@ const DiagnosticForm= () => {
       setPredictionTree(response.data.prediction);
 
       setScoreTree([response.data.probability_class_0, response.data.probability_class_1]);
-      console.log(predictionTree);
-      //console.log("Predicción:", response.data.prediction);
-      //console.log("Clase 0:", response.data.probability_class_0);
-      //console.log("Clase 1:", response.data.probability_class_1);
+    
+      return {predictionTree: response.data.prediction };
+      
     }catch(error) {
       console.error('Error al calcular en el modelo:', error)
     }
   }
 
+ 
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await SystemExpertDiagnosis();
+       const SEresult = await SystemExpertDiagnosis();
 
-      await TreeDiagnosis();
-       
+      const MLresult = await TreeDiagnosis();
+
+          const payload = {
+            ...formData,                 
+            predictionTree: MLresult.predictionTree,   
+            score: SEresult.score,
+             user_id: user?.id                
+          };
+
+
+             const response = await axios.post(
+              "http://localhost:5000/modelData",
+              payload,
+              { headers: { "Content-Type": "application/json" } }
+            );
+
+            console.log("Datos guardados correctamente");
+              
     } catch (error) {
       console.error('Error al calcular:', error)
     }

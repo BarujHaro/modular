@@ -13,18 +13,24 @@ import RoadmapTag from "./RoadmapTag.js";
 import UserLikedTag from "./UserLikedTag.js";
 import UserLikedRoadmap from "./UserLikedRoadmap.js";
 
+//ML analisis
+import MLanalisis from "./MLanalisis.js";
+import UserML from "./UserML.js";
+
 export const setupAssociations = () => {
   // Roadmap ↔ Tag (N–N) sin FKs en MySQL (constraints:false) para estabilizar en dev
   Roadmap.belongsToMany(Tag, {
     through: RoadmapTag,
     foreignKey: "roadmapId",
     otherKey: "tagId",
+    as: "tags",
     constraints: false,
   });
   Tag.belongsToMany(Roadmap, {
     through: RoadmapTag,
     foreignKey: "tagId",
     otherKey: "roadmapId",
+    as:"roadmaps",
     constraints: false,
   });
 
@@ -40,6 +46,7 @@ export const setupAssociations = () => {
     through: UserLikedTag,
     foreignKey: "tagId",
     otherKey: "userId",
+    as:"usersWhoLiked",
     constraints: false,
   });
 
@@ -55,8 +62,27 @@ export const setupAssociations = () => {
     through: UserLikedRoadmap,
     foreignKey: "roadmapId",
     otherKey: "userId",
+    as:"usersWhoLiked",
     constraints: false,
   });
+
+User.belongsToMany(MLanalisis, {
+  through: UserML,
+  foreignKey: "user_id",
+  otherKey: "ml_id",
+  as: "analisisFinancieros",
+  constraints: false,
+});
+
+MLanalisis.belongsToMany(User, {
+  through: UserML,
+  foreignKey: "ml_id",
+  otherKey: "user_id",
+  as: "usuarios",
+  constraints: false,
+});
+
+
 };
 
 export const syncModels = async () => {
@@ -66,11 +92,14 @@ export const syncModels = async () => {
   await User.sync();
   await Tag.sync();
   await Roadmap.sync();
+  await MLanalisis.sync();
 
   // Puente + likes
   await RoadmapTag.sync();
   await UserLikedTag.sync();
   await UserLikedRoadmap.sync();
+  await UserML.sync();  
+
 
   await sequelize.query("SET FOREIGN_KEY_CHECKS=1;");
 };
@@ -84,4 +113,6 @@ export {
   RoadmapTag,
   UserLikedTag,
   UserLikedRoadmap,
+  MLanalisis,  
+  UserML,
 };
