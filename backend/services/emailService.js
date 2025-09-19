@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
- 
+ /*
 const transporter = nodemailer.createTransport({
     host: "sandbox.smtp.mailtrap.io",
     port: 2525,
@@ -18,14 +18,25 @@ const transporter = nodemailer.createTransport({
         pass: process.env.MAILTRAP_PASS     // Tu Password de Mailtrap
     }
 });
+*/
 
+const transporter = nodemailer.createTransport({
+service: 'gmail',    
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS   // contraseña de app
+    },
+    tls: {
+        rejectUnauthorized: false  
+    }
+});
 
 
 // Función para enviar correo de verificación
 export const sendVerificationEmail = async (email, token) => {
     try {
-        const info = await transporter.sendMail({
-            from: `"SparkUp" <no-reply@sparkup.com>`,
+        await transporter.sendMail({
+            from: `"SparkUp" <${process.env.GMAIL_USER}>`,
             to: email,
             subject: 'Verifica tu cuenta',
             html: `
@@ -39,13 +50,11 @@ export const sendVerificationEmail = async (email, token) => {
                 </div>
             `
         });
-        console.log('Correo enviado a Mailtrap:', info.messageId);
-        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-        return info;
+      
         
       
     } catch (error) {
-       
+       console.log(error);
         throw error;
     }
 };
@@ -55,8 +64,8 @@ export const sendVerificationEmail = async (email, token) => {
 export const SendForgotEmail = async (email, token) => {
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
     try {
-         const info = await transporter.sendMail({
-            from: '"SparkUp" <no-reply@sparkup.com>',
+        await transporter.sendMail({
+            from: `"SparkUp" <${process.env.GMAIL_USER}>`,
             to: email,
             subject: 'Restablecer contraseña',
             html: `
@@ -75,9 +84,7 @@ export const SendForgotEmail = async (email, token) => {
             `
         });
 
-        console.log('Correo enviado a Mailtrap:', info.messageId);
-        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-        return info;
+      
     } catch (error) {
         console.error('Error al enviar correo:', error.message);
         throw error;
