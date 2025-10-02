@@ -7,6 +7,7 @@ import logo from "../assets/Logo_SparkUp.png";
 function Header() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const isAdmin = user?.role === "admin";
 
   const goMyBusiness = () => {
     if (user) navigate("/profile");
@@ -23,6 +24,7 @@ function Header() {
       <nav className="nav-right">
         <NavLink to="/roadmaps" className="nav-link">Roadmaps</NavLink>
         <NavLink to="/minegocio" className="nav-link">Mi negocio</NavLink>
+        {isAdmin && <Link to="/options" className="nav-link">Opciones</Link>}
         {user ? (
           <NavLink to="/profile" className="login-button">Perfil</NavLink>
         ) : (

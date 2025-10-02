@@ -2,124 +2,143 @@
 import React, { useEffect, useState, useContext } from "react";
 import "./roadmaps.css";
 import { AuthContext } from "../../components/AuthContext.jsx";
-import { getLikes, toggleRoadmapLike } from "../../utils/userPrefs";
+import { getLikes, setLikes, toggleRoadmapLike } from "../../utils/userPrefs";
+import { getRoadmaps } from "../../services/catalog";
+import { getMyLikedRoadmapIds, likeRoadmap, unlikeRoadmap } from "../../services/likes";
 
-// 🚀 Roadmaps (incluye Razones Financieras)
-export const ROADMAPS = [
-  // --- EXISTENTES ---
-  { id: "rm-excel", title: "Excel para Finanzas", tags: ["Excel Básico","Excel Avanzado","Macros VBA","Modelado Financiero"] },
-  { id: "rm-sheets", title: "Google Sheets para Negocios", tags: ["Google Sheets","Presupuestos","Flujo de Caja","Ahorro"] },
-  { id: "rm-powerbi", title: "Power BI Inicial", tags: ["Power BI","Análisis Financiero","Indicadores Económicos"] },
-  { id: "rm-personal", title: "Finanzas Personales", tags: ["Finanzas Personales","Ahorro","Presupuestos"] },
-  { id: "rm-presup", title: "Aprendiendo a llevar Presupuestos", tags: ["Presupuestos","Costos y Presupuestos","Flujo de Caja"] },
-  { id: "rm-micro", title: "Finanzas para Micronegocios", tags: ["Finanzas para Micronegocios","Contabilidad Básica","Análisis de Estados Financieros"] },
-
-  // --- NUEVOS: RAZONES FINANCIERAS ---
-  {
-    id: "rm-liquidez",
-    title: "Razones de Liquidez / Solvencia",
-    tags: [
-      "Razón Corriente",
-      "Prueba Ácida",
-      "Liquidez Inmediata",
-      "Capital de Trabajo",
-      "Índice de Solvencia"
-    ]
-  },
-  {
-    id: "rm-endeudamiento",
-    title: "Razones de Endeudamiento",
-    tags: [
-      "Deuda Total / Activos",
-      "Deuda / Capital",
-      "Apalancamiento Financiero",
-      "Cobertura de Intereses",
-      "Deuda LP / Capital"
-    ]
-  },
-  {
-    id: "rm-actividad",
-    title: "Razones de Actividad / Productividad",
-    tags: [
-      "Rotación de Inventarios",
-      "Rotación de Cuentas por Cobrar",
-      "Periodo Medio de Cobro",
-      "Rotación de Cuentas por Pagar",
-      "Periodo Medio de Pago",
-      "Rotación de Activos Totales",
-      "Ciclo de Conversión de Efectivo"
-    ]
-  },
-  {
-    id: "rm-rentabilidad",
-    title: "Razones de Rentabilidad / Resultado",
-    tags: [
-      "Margen Bruto",
-      "Margen Operativo",
-      "Margen Neto",
-      "ROA",
-      "ROE",
-      "Margen EBITDA",
-      "ROIC"
-    ]
-  }
-];
+// Export vacío por compatibilidad con Home (si aún lo importara)
+export const ROADMAPS = [];
 
 export default function Roadmaps() {
   const { user } = useContext(AuthContext);
+  const isLogged = !!user;
 
-  // ✅ Likes en estado local para reacción inmediata
-  const [likes, setLikes] = useState(() => getLikes(user));
+  const [roadmaps, setRoadmaps] = useState([]);
+  const [expanded, setExpanded] = useState({});
+  const [likedSet, setLikedSet] = useState(() => {
+    const ls = getLikes(user)?.roadmaps || {};
+    return new Set(Object.entries(ls).filter(([, v]) => !!v).map(([k]) => String(k)));
+  });
+
+  // 1) Cargar roadmaps reales desde backend
   useEffect(() => {
-    setLikes(getLikes(user));
-  }, [user]);
+    (async () => {
+      try {
+        const list = await getRoadmaps();       // [{id,title,tags:[{id,name}]}]
+        setRoadmaps(list);
+        if (typeof window !== "undefined") window.__ROADMAPS_CACHE__ = list; // compat opcional
+      } catch (e) {
+        console.error("No se pudo cargar /catalog/roadmaps:", e);
+        setRoadmaps([]);
+      }
+    })();
+  }, []);
 
-  const [expanded, setExpanded] = useState({}); // roadmaps desplegados
+  // 2) Sincronizar likes desde backend -> localStorage/UI
+  useEffect(() => {
+    (async () => {
+      if (!isLogged) return;
+      try {
+        const ids = await getMyLikedRoadmapIds(); // Set<number>
+        if (ids.size === 0) return;
 
-  const isLiked = (rid) => !!likes?.roadmaps?.[rid];
+        const likes = getLikes(user);
+        const next = { ...(likes.roadmaps || {}) };
+        ids.forEach((id) => { next[String(id)] = true; });
 
-  const handleToggleLike = (rid) => {
-    const updated = toggleRoadmapLike(user, rid); // persiste en localStorage
-    setLikes(updated); // refleja de inmediato
-  };
+        setLikes(user, { ...likes, roadmaps: next });
+        setLikedSet(new Set(Object.entries(next).filter(([, v]) => !!v).map(([k]) => String(k))));
+      } catch (e) {
+        console.warn("No se pudieron sincronizar roadmaps liked:", e);
+      }
+    })();
+  }, [isLogged, user]);
 
-  const toggleExpand = (rid) => {
-    setExpanded((prev) => ({ ...prev, [rid]: !prev[rid] }));
+  const isLiked = (rid) => likedSet.has(String(rid));
+  const toggleExpand = (rid) => setExpanded((prev) => ({ ...prev, [rid]: !prev[rid] }));
+
+  // 3) Toggle con UI optimista + persistencia real
+  const toggleLike = async (rid) => {
+    const idNum = Number(rid);
+    const idStr = String(rid);
+
+    // Por seguridad: no intentes persistir si el id no es entero positivo
+    if (!Number.isInteger(idNum) || idNum <= 0) {
+      console.warn("Roadmap con id inválido (no se puede persistir):", rid);
+      setLikedSet((prev) => {
+        const next = new Set(prev);
+        if (next.has(idStr)) next.delete(idStr); else next.add(idStr);
+        return next;
+      });
+      return;
+    }
+
+    if (!isLogged) {
+      setLikedSet((prev) => {
+        const next = new Set(prev);
+        if (next.has(idStr)) next.delete(idStr); else next.add(idStr);
+        return next;
+      });
+      return;
+    }
+
+    try {
+      // UI/localStorage optimista
+      const likes = toggleRoadmapLike(user, idStr);
+      const nowLiked = !!likes.roadmaps?.[idStr];
+      setLikedSet(new Set(Object.entries(likes.roadmaps || {}).filter(([, v]) => !!v).map(([k]) => String(k))));
+
+      // Persistencia real en BD
+      if (nowLiked) await likeRoadmap(idNum);
+      else await unlikeRoadmap(idNum);
+    } catch (e) {
+      console.error("Backend roadmap-like error (UI intacta):", e);
+    }
   };
 
   return (
-    <div className="roadmaps-page">
-      <h1>Roadmaps</h1>
+    <section className="roadmaps-section">
+      <h2>ROADMAPS</h2>
 
-      <div className="roadmaps-list">
-        {ROADMAPS.map((rm) => (
-          <div key={rm.id} className="roadmap-item">
-            <div className="roadmap-header">
-              <button className="roadmap-pill" onClick={() => toggleExpand(rm.id)}>
-                {rm.title}
-              </button>
-              <button
-                className={`like-btn ${isLiked(rm.id) ? "liked" : ""}`}
-                onClick={() => handleToggleLike(rm.id)}
-                aria-label={isLiked(rm.id) ? "Quitar me gusta" : "Dar me gusta"}
-                title={isLiked(rm.id) ? "Quitar me gusta" : "Dar me gusta"}
-              >
-                {isLiked(rm.id) ? "♥" : "♡"}
-              </button>
-            </div>
+      {roadmaps.length === 0 ? (
+        <p className="muted">Cargando roadmaps…</p>
+      ) : (
+        roadmaps.map((rm) => {
+          const liked = isLiked(rm.id);
+          const likeDisabled = !Number.isInteger(Number(rm.id)) || Number(rm.id) <= 0;
 
-            {expanded[rm.id] && (
-              <div className="roadmap-tags-container">
-                {rm.tags.map((t) => (
-                  <span key={t} className="roadmap-tag">{t}</span>
-                ))}
+          return (
+            <div key={rm.id} className="roadmap-item">
+              <div className="roadmap-header">
+                <button className="roadmap-pill" onClick={() => toggleExpand(rm.id)}>
+                  {rm.title}
+                </button>
+                <button
+                  className={`like-btn ${liked ? "liked" : ""}`}
+                  onClick={() => !likeDisabled && toggleLike(rm.id)}
+                  aria-pressed={liked}
+                  aria-label={liked ? "Quitar me gusta" : "Dar me gusta"}
+                  title={likeDisabled ? "No disponible (id inválido)" : liked ? "Quitar me gusta" : "Dar me gusta"}
+                  disabled={likeDisabled}
+                >
+                  {liked ? "♥" : "♡"}
+                </button>
               </div>
-            )}
-          </div>
-        ))}
-      </div>
 
+              {expanded[rm.id] && (
+                <div className="roadmap-tags-container">
+                  {(rm.tags || []).map((t) => (
+                    <span key={t.id || t.slug || t.name} className="roadmap-tag">
+                      {t.name}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })
+      )}
       <p className="note">* Aquí solo ves los tags de cada roadmap. Para ver videos, vuelve al Home.</p>
-    </div>
+    </section>
   );
 }

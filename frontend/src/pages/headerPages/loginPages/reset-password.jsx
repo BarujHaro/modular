@@ -1,12 +1,13 @@
 import React,{useState} from 'react';
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-
-const localUrl = "http://localhost:5000";
+import './style/login.css';
+const localUrl = "http://localhost:5000/api";
 const currentUrl = localUrl;
 
 function ResetPassword(){
     const [mensaje, setMensaje] = useState("");
+    const [errorMensaje, setErrorMensaje] = useState("");
     const [pass, setPass] = useState("");
     const [passC, setPassC] = useState("");
      const navigate = useNavigate();
@@ -23,7 +24,7 @@ function ResetPassword(){
     setMensaje("");
     e.preventDefault();
     if(!validatePass){
-        setMensaje("Tiene que tener extension de 8 caracteres, 1 mayuscula, 1 caracter especial y 1 numero");
+        setErrorMensaje("Tiene que tener extension de 8 caracteres, 1 mayuscula, 1 caracter especial y 1 numero");
         return;
     }
 
@@ -42,21 +43,30 @@ function ResetPassword(){
             setTimeout(() => navigate("/login"), 3000);
     }catch(error){
         console.log(error);
-        setMensaje("Error en el cambio de contraseña");
+        setErrorMensaje("Error en el cambio de contraseña");
     }
   };
       
           return (
-              <div className='login-contenido'>
-                <div className='login-formulario'>
-<h2>Resetear contraseña</h2>
+              <div className='login-page theme-dark'>
+                <div className='login-card'>
+                <h2 className="login-title">Resetear contraseña</h2>
+
+                {mensaje && 
+                <p className="alert ok">{mensaje}</p>
+                }
+
+                {errorMensaje && 
+                <p className="alert error">{errorMensaje}</p>
+                }
+
                   <form onSubmit={ResetPass}>
-                        <div className='login-field'>
-                            <label className='login-label'>Contraseña</label>
+                        <div className='form-field'>
+                            <label className='form-label'>Contraseña</label>
                             <div className='control'>
                                 <input
                                 type="password"  
-                                className='login-input'
+                                className='form-input'
                                 value={pass}
                                 onChange={(e)=>setPass(e.target.value)}
             
@@ -65,12 +75,12 @@ function ResetPassword(){
                             </div>
                         </div>
 
-                        <div className='login-field'>
-                            <label className='login-label'>Confirma contraseña</label>
+                        <div className='form-field'  style={{ margin: '20px 0' }}>
+                            <label className='form-label'>Confirma contraseña</label>
                             <div className='control'>
                                 <input
                                 type="password"  
-                                className='login-input'
+                                className='form-input'
                                 value={passC}
                                 onChange={(e)=>setPassC(e.target.value)}
             
@@ -79,10 +89,11 @@ function ResetPassword(){
                             </div>
                         </div>
 
-                        <div className='login-field'>
+                        <div className='form-field'>
                             <button 
                                 type="submit" 
-                                className='login-boton'
+                                       className="btn-primary full"
+                                style={{ margin: '20px 0' }}
                                 
                             >
                             Cambiar
@@ -91,9 +102,7 @@ function ResetPassword(){
 
 
                   </form>
-                 {mensaje && 
-  <p className="login-message">{mensaje}</p>
-}
+                
                 </div>
                   
               </div>

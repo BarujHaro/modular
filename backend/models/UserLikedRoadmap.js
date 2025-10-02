@@ -1,19 +1,23 @@
-// backend/models/UserLikedRoadmap.js
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database.js";
 
 class UserLikedRoadmap extends Model {}
+
 UserLikedRoadmap.init(
   {
-    userId:    { type: DataTypes.INTEGER, allowNull: false },
-    roadmapId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    userId:    { type: DataTypes.INTEGER, allowNull: false, field: "userId",references: { model: "user", key: "id" },onUpdate: "CASCADE",onDelete: "CASCADE",  },
+    roadmapId: { type: DataTypes.INTEGER, allowNull: false, field: "roadmapId", references: { model: "roadmaps", key: "id" },onUpdate: "CASCADE",onDelete: "CASCADE",},
   },
   {
     sequelize,
     modelName: "UserLikedRoadmap",
     tableName: "user_liked_roadmaps",
     timestamps: true,
-    indexes: [{ unique: true, fields: ["userId", "roadmapId"] }],
+    underscored: false,
+    indexes: [
+      { unique: true, fields: ["userId", "roadmapId"] },
+      { fields: ["roadmapId"] },
+    ],
   }
 );
 

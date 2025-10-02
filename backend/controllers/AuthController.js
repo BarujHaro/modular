@@ -8,7 +8,7 @@ import { updatePass } from './UserController.js';
 // ========== REGISTRO (envía token por correo) ==========
 //Controlador para manejar el registro inicial del usuario
 export const registerUser = async (req, res) => {
-    
+  
     try {
         //Se extraen los datos
         const { firstName, lastName, email, password } = req.body;

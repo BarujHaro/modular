@@ -18,6 +18,9 @@ import ProfileInfo from './pages/headerPages/profilePages/profileInfo.jsx';
 import ProfileEdit from './pages/headerPages/profilePages/profileEdit.jsx';
 import ProfileDelete from './pages/headerPages/profilePages/ProfileDelete.jsx';
 import ProfileFav from './pages/headerPages/profilePages/profileFav.jsx';
+///Paginas relacionadas al admin
+import Options from './pages/headerPages/adminOptions/options.jsx';
+import AdminUserList from './pages/headerPages/adminOptions/AdminUserList.jsx';
 
 import MiNegocio from './pages/headerPages/minegocioPages/DiagnosticForm.jsx';
 
@@ -36,6 +39,11 @@ export function AppRoutes() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="options" element={<Options />}>
+            <Route index element={<AdminUserList />} />
+            <Route path="/options/info" element={<AdminUserList />} />
+        
+        </Route>
 
         {/* Profile anidado */}
         <Route path="/profile" element={<Profile />}>

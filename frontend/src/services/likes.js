@@ -1,23 +1,50 @@
+//likes.js
 import api from "../utils/api";
 
 // Obtiene IDs de tags likeados desde el backend
 export async function getMyLikedTagIds() {
-  try {
-    const { data } = await api.get("/me/likes/tags"); // forma 1: array de ids
-    if (Array.isArray(data)) return new Set(data.map(Number));
-
-    // forma 2: { tags: [id, ...] }
-    if (Array.isArray(data?.tags)) return new Set(data.tags.map(Number));
-  } catch {
-    // si 404/no auth, devolvemos set vacío
+  for (const path of ["/me/likes", "/me/likes/tags"]){
+    try{
+      const { data } = await api.get(path);
+      const arr=
+         Array.isArray(data) ? data :
+         Array.isArray(data?.tags) ? data.tags :
+         Array.isArray(data?.likedTagIds) ? data.likedTagIds :
+         [];
+      return new Set(arr.map((x) => Number(x)));  
+    }catch{}
   }
   return new Set();
 }
 
-export async function likeTag(tagId) {
-  await api.post(`/me/likes/tag/${tagId}`);
+export async function likeTag(ref) {
+  return api.post(`/me/likes/tag/${encodeURIComponent(String(ref))}`);
 }
 
-export async function unlikeTag(tagId) {
-  await api.delete(`/me/likes/tag/${tagId}`);
+
+
+export async function unlikeTag(ref) {
+  return api.delete(`/me/likes/tag/${encodeURIComponent(String(ref))}`);
+}
+
+//ROADMAPS SECTION
+export async function getMyLikedRoadmapIds() {
+  try {
+    const { data } = await api.get("/me/likes/roadmaps");
+    const arr =
+      Array.isArray(data) ? data :
+      Array.isArray(data?.roadmaps) ? data.roadmaps :
+      [];
+    return new Set(arr.map((x) => Number(x)));
+  } catch {
+    return new Set();
+  }
+}
+
+export async function likeRoadmap(roadmapId) {
+  return api.post(`/me/likes/roadmap/${encodeURIComponent(String(roadmapId))}`);
+}
+
+export async function unlikeRoadmap(roadmapId) {
+  return api.delete(`/me/likes/roadmap/${encodeURIComponent(String(roadmapId))}`);
 }

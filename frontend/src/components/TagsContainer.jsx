@@ -1,37 +1,63 @@
-import React, { useState } from 'react';
-import { FaHeart, FaRegHeart } from 'react-icons/fa';
-import './TagsContainer.css';
+// src/components/TagsContainer.jsx
+import React, { useState, useMemo } from "react";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import "./TagsContainer.css";
 
-const financeTags = [
-  "Excel Básico","Power BI","Contabilidad Básica","Análisis Financiero","Inversiones para Principiantes",
-  "Bolsa de Valores","Criptomonedas","Finanzas Personales","Presupuestos","Ahorro",
-  "Contabilidad Avanzada","Impuestos","Modelado Financiero","Excel Avanzado","Macros VBA",
-  "Valoración de Empresas","Mercados de Capitales","Gestión de Riesgos","Trading","Análisis Técnico",
-  "Finanzas Corporativas","Planificación de la Jubilación","Seguros","Deuda y Crédito","Historia Económica",
-  "Econometría","Estadística para Finanzas","Python para Finanzas","R para Finanzas","Blockchain",
-  "ETFs","Fondos Mutuos","Bienes Raíces","Crowdfunding","Fintech",
-  "Regulación Financiera","Auditoría","Costos y Presupuestos","Flujo de Caja","Indicadores Económicos",
-  "Banca de Inversión","Capital de Riesgo","Fusiones y Adquisiciones","Derivados Financieros","Options Trading",
-  "Psicología del Inversor","Noticias Económicas","Análisis de Estados Financieros","Normas IFRS","Ratio Financiero",
-  "Google Sheets","Finanzas para Micronegocios","Razón Corriente","Prueba Ácida","Liquidez Inmediata",
-  "Capital de Trabajo","Índice de Solvencia","Deuda Total / Activos","Deuda / Capital","Apalancamiento Financiero","Cobertura de Intereses",
-  "Deuda LP / Capital","Rotación de Inventarios","Rotación de Cuentas por Cobrar","Periodo Medio de Cobro","Rotación de Cuentas por Pagar",
-  "Periodo Medio de Pago","Rotación de Activos Totales","Ciclo de Conversión de Efectivo",
-  "Margen Bruto","Margen Operativo","Margen Neto","ROA","ROE","Margen EBITDA","ROIC"
+/**
+ * Props:
+ * - tags: Array<{ id:number, name:string, slug?:string }>
+ * - likedTags: Record<string, boolean>   // keys por NOMBRE del tag (como ya usas en localStorage)
+ * - onTagSelect(tagObj)
+ * - onLikeToggle(tagObj)
+ * - showOnlyLiked: boolean
+ */
+export default function TagsContainer({
+  tags = [],
+  likedTags = {},
+  onTagSelect,
+  onLikeToggle,
+  showOnlyLiked = false,
+}) {
+  const [searchTerm, setSearchTerm] = useState("");
 
+  // Normalizamos: siempre objetos {id, name, slug}
+  const normalized = useMemo(
+    () =>
+      (Array.isArray(tags) ? tags : [])
+        .filter(Boolean)
+        .map((t, i) =>
+          typeof t === "string"
+            ? { id: i + 1, name: t, slug: t.toLowerCase().replace(/\s+/g, "-") }
+            : {
+                id: Number(t.id ?? i + 1),
+                name: t.name ?? `tag_${i + 1}`,
+                slug:
+                  t.slug ??
+                  (t.name || "")
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^a-z0-9\s-]/g, "")
+                    .replace(/\s+/g, "-")
+                    .replace(/-+/g, "-"),
+              }
+        ),
+    [tags]
+  );
 
-];
+  const filtered = useMemo(() => {
+    const base = normalized.filter((t) =>
+      t.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    if (showOnlyLiked && !searchTerm) {
+      return base.filter((t) => !!likedTags[t.name]);
+    }
+    return base;
+  }, [normalized, searchTerm, showOnlyLiked, likedTags]);
 
-const TagsContainer = ({ onTagSelect, likedTags = {}, onLikeToggle, showOnlyLiked = false }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const base = financeTags;
-  const bySearch = base.filter(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-  const byLike = showOnlyLiked && !searchTerm
-    ? bySearch.filter(tag => likedTags[tag])
-    : bySearch;
-
-  const filteredTags = byLike;
+  const handleSelect = (t) => onTagSelect && onTagSelect(t);
+  const handleToggle = (t) => onLikeToggle && onLikeToggle(t);
 
   return (
     <div className="tags-main-container">
@@ -46,19 +72,23 @@ const TagsContainer = ({ onTagSelect, likedTags = {}, onLikeToggle, showOnlyLike
       </div>
 
       <div className="tags-list">
-        {filteredTags.map((tag) => (
-          <div key={tag} className="tag-item">
-            <button className="tag-button" onClick={() => onTagSelect && onTagSelect(tag)}>
-              {tag}
-            </button>
-            <span className="like-icon" onClick={() => onLikeToggle && onLikeToggle(tag)}>
-              {likedTags[tag] ? <FaHeart /> : <FaRegHeart /> }
-            </span>
-          </div>
-        ))}
+        {filtered.map((t) => {
+          const isLiked = !!likedTags[t.name];
+          return (
+            <div key={`${t.id}-${t.slug || t.name}`} className="tag-item">
+              <button className="tag-button" onClick={() => handleSelect(t)}>
+                {t.name}
+              </button>
+              <span className="like-icon" onClick={() => handleToggle(t)}>
+                {isLiked ? <FaHeart /> : <FaRegHeart />}
+              </span>
+            </div>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p className="muted">No hay tags para mostrar.</p>
+        )}
       </div>
     </div>
   );
-};
-
-export default TagsContainer;
+}

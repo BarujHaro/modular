@@ -1,8 +1,8 @@
 import React,{useState} from 'react';
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import './style/login.css';
-const localUrl = "http://localhost:5000";
+import './style/register.css';
+const localUrl = "http://localhost:5000/api";
 const currentUrl = localUrl;
 
 const Register = () => {
@@ -60,7 +60,7 @@ const Register = () => {
         setIsSubmitting(true);  
       
         
-        try{
+        try{ 
           
             
             const response = await axios.post(`${currentUrl}/auth/register`, {
@@ -114,14 +114,18 @@ const Register = () => {
   const SaveUser = async () => {
     
     try {
-        await axios.post(`${currentUrl}/users`, {
+        await axios.post(`${currentUrl}/user`, {
             firstName,
             lastName,
             email,
             password,
             emailToken,
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
-        //se guarda correctamente y despues de 5 segundos se redirige al login
+                //se guarda correctamente y despues de 5 segundos se redirige al login
         setFinalMessage("Cuenta verificada con éxito. Redirigiendo al login en 5 segundos...");
         setTimeout(() => {
             navigate("/login");
@@ -135,13 +139,13 @@ const Register = () => {
 
 
     return (
-        <div className="login-contenido">
-            <div className="login-formulario">
-                <div className='login-field'>
-                        <h2>Registro</h2>
+        <div className="login-page theme-dark">
+            <div className="login-card">
+                <div className='login-header'>
+                        <h2 className="login-title">Registro</h2>
                     </div>
                         {registrationSuccess ? (
-                            <div className="login-message">
+                            <div>
                                 <p>¡Registro exitoso!</p>
                                 <p>Hemos enviado un correo de verificación</p>
                                 <p>Ingresa los caracteres para verificar la cuenta:</p>
@@ -149,51 +153,51 @@ const Register = () => {
                                 <input
                                     type="text"
                                     maxLength={5}
-                                    className="login-input"
+                                    className="form-input"
                                     value={verificationToken}
                                     onChange={(e) => setVerificationToken(e.target.value)}
                                     required
                                 />
-
-                                <button className="login-boton" onClick={verifyToken}>
+                                <div className='field-2'> <button className="btn-primary full" onClick={verifyToken}>
                                     Verificar cuenta
-                                </button>
+                                </button></div>
+                               
 
                                     {tokenError && (
-                                        <p className="login-message">El código ingresado es incorrecto. Intenta de nuevo.</p>
+                                        <p className="alert error">El código ingresado es incorrecto. Intenta de nuevo.</p>
                                     )}
 
                                     {finalMessage && (
-                                        <div className="login-message">
+                                        <div className="alert ok">
                                             {finalMessage}
                                         </div>
                                         )}
                             </div>
                     ) : (
-                    <form onSubmit={VerifyEmail}>
+                    <form onSubmit={VerifyEmail} className="login-form">
                             {errors.server && (
-                        <div className="login-message">
+                        <div className="alert error">
                             {errors.server}
                         </div>
                         )}
                         {errors.email && (
-                        <div className="login-message">
+                        <div className="alert error">
                             <p>{errors.email}</p>
                         </div>    
                         )}
             
                         {errors.password && (
-                            <div className="login-message">
+                            <div className="alert error">
                                 <p>{errors.password}</p>
                             </div>
                         )}
 
-                        <div className='login-field'>
-                            <label className='login-label'>Nombre</label>
+                        <div className='form-field'>
+                            <label className='form-label'>Nombre</label>
                             <div className='control'>
                                 <input
                                 type="text"
-                                className='login-input'
+                                className='form-input'
                                 value={firstName}
                                 onChange={(e)=>setFirstName(e.target.value)}
                                 placeholder="Nombre"
@@ -202,12 +206,12 @@ const Register = () => {
                             </div>
                         </div>
 
-                        <div className='login-field'>
-                            <label className='login-label'>Apellidos</label>
+                        <div className='form-field'>
+                            <label className='form-label'>Apellidos</label>
                             <div className='control'>
                                 <input
                                 type="text"
-                                className='login-input'
+                                className='form-input'
                                 value={lastName}
                                 onChange={(e)=>setLastName(e.target.value)}
                                 placeholder="Apellidos"
@@ -216,12 +220,12 @@ const Register = () => {
                             </div>
                         </div>
 
-                        <div className='login-field'>
-                            <label className='login-label'>Email</label>
+                        <div className='form-field'>
+                            <label className='form-label'>Email</label>
                             <div className='control'>
                                 <input
                                 type="text"
-                                className='login-input'
+                                className='form-input'
                                 value={email}
                                 onChange={(e)=>setEmail(e.target.value)}
                                 placeholder="Email@gmail.com"
@@ -230,24 +234,24 @@ const Register = () => {
                             </div>
                         </div>                    
 
-                        <div className='login-field'>
-                            <label className='login-label'>Contraseña</label>
+                        <div className='form-field'>
+                            <label className='form-label'>Contraseña</label>
                             <div className='control'>
                                 <input
                                 type="password"  
-                                className='login-input'
+                                className='form-input'
                                 value={password}
                                 onChange={(e)=>setPass(e.target.value)}
-                                placeholder="Pass"
+                                placeholder="Contraseña"
                                 required
                                 />
                             </div>
                         </div>
 
-                        <div className='login-field'>
+                        <div className='form-field'>
                             <button 
                                 type="submit" 
-                                className='login-boton'
+                                className="btn-primary full"
                                 disabled={isSubmitting}
                             >
                                 {isSubmitting ? 'Registrando...' : 'Registrar'}

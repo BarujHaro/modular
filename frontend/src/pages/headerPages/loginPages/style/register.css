@@ -151,9 +151,6 @@
   max-width: 100%;  
   box-sizing: border-box;
 }
-.form-field2{
-  margin: 20px;
-}
 .form-input:focus { outline: none; border-color: #525252; }
 
 .btn-primary {
@@ -188,4 +185,8 @@
   cursor: pointer;
   text-decoration: underline;
   padding: 0;
+}
+.field-2{
+  margin-top: 20px;
+  margin-bottom: 20px;
 }

@@ -30,10 +30,10 @@ export async function createAdminUser() {
     lastName,
     email: adminEmail,
     password: hashed,
-    role: "user",         // NO admin
+    role: "admin",         
     status: true,
     emailToken: uuidv4(), // este campo SÍ existe en tu modelo
   });
 
-  console.log(`[seed] Usuario de prueba creado: ${adminEmail} (role=user)`);
+  console.log(`[seed] Usuario de prueba creado: ${adminEmail} (role=admin)`);
 }

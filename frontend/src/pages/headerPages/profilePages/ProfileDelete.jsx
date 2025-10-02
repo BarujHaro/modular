@@ -2,6 +2,7 @@ import { useContext, useState} from "react";
 import { AuthContext } from "../../../components/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./profile.css";
 
 function ProfileDelete(){
      const { user, logout} = useContext(AuthContext);
@@ -45,7 +46,7 @@ function ProfileDelete(){
                         <div className='field'>
                             <button 
                                 type="submit" 
-                                className='boton'
+                                className="boton-perfil"
                                 onClick={isEliminar}
                             >
                                 Eliminar cuenta
@@ -61,7 +62,7 @@ function ProfileDelete(){
                         <div className='field'>
                             <button 
                                 type="submit" 
-                                className='boton'
+                                className="boton-perfil"
                                 onClick={definitivamente}
                             >
                                 Eliminar cuenta definitivamente

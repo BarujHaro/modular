@@ -11,12 +11,13 @@ import CatalogRoute from "./routes/CatalogRoute.js";
 import AuthRoute from "./routes/AuthRoute.js";
 import UserRoute from "./routes/UserRoute.js";
 import TaxonomyRoute from "./routes/TaxonomyRoute.js";
-import { seedTagsAndRoadmaps } from "./config/seedTaxonomy.js";
+import { seedTagsAndRoadmaps,seedRoadmapTagLinks } from "./config/seedTaxonomy.js";
+import { Tag } from "./models/index.js";
 import LikesRoute from "./routes/LikesRoute.js";
 
 import DiagnosticRoute from "./routes/diagnostic.js";
 import predictRoutes from "./routes/predictRoute.js";
-
+import MLDataRoute from "./routes/MLDataRoute.js";
 
 const app = express();
 app.use(cors({
@@ -29,17 +30,17 @@ app.use(express.json());
 // ===== RUTAS PÚBLICAS =====
 app.get("/api/health", (req, res) => res.json({ ok: true }));  // health pública
 app.use("/api/catalog", CatalogRoute);                          // catálogo PÚBLICO
-app.use("/api/auth", AuthRoute);
-
-
-// ===== RUTAS PROTEGIDAS ===== 
-// LikesRoute ya se protege adentro con router.use(verifyToken)
-app.use("/api", LikesRoute);
-app.use("/api/users", UserRoute);
-app.use("/api", TaxonomyRoute); 
-
+app.use("/api", AuthRoute); 
 app.use(DiagnosticRoute);
 app.use(predictRoutes);
+app.use(MLDataRoute);
+// ===== RUTAS PROTEGIDAS ===== 
+// LikesRoute ya se protege adentro con router.use(verifyToken)
+app.use("/api", UserRoute);
+app.use("/api", LikesRoute);
+app.use("/api", TaxonomyRoute); 
+
+
 
 const PORT = process.env.PORT || 5000;
 
@@ -52,9 +53,11 @@ const startServer = async () => {
     await syncModels();
 
     // 3) (Opcional) Seed controlado por env
-    if (process.env.SEED_TAXONOMY === "phase1") {
-      await seedTagsAndRoadmaps();
+    if ((await Tag.count()) === 0) {
+      await seedTagsAndRoadmaps();  
+      await seedRoadmapTagLinks();
     }
+
 
     // 4) Crear admin si no existe
     await createAdminUser();

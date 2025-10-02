@@ -75,12 +75,12 @@ setErrors("error de edicion");
                   <h2>{email}</h2>
                   <form onSubmit={EditProfile}>
 
-                        <div className='field'>
-                            <label className='label'>Nombre</label>
+                        <div className='form-field'>
+                            <label className='form-label'>Nombre</label>
                             <div className='control'>
                                 <input
                                 type="text"
-                                className='input'
+                                className='form-input'
                                 value={firstName}
                                 onChange={(e)=>setFirstName(e.target.value)}
                                 placeholder="Nombre"
@@ -89,12 +89,12 @@ setErrors("error de edicion");
                             </div>
                         </div>
 
-                        <div className='field'>
-                            <label className='label'>Apellidos</label>
+                        <div className='form-field'>
+                            <label className='form-label'>Apellidos</label>
                             <div className='control'>
                                 <input
                                 type="text"
-                                className='input'
+                                className='form-input'
                                 value={lastName}
                                 onChange={(e)=>setLastName(e.target.value)}
                                 placeholder="Apellidos"
@@ -106,12 +106,12 @@ setErrors("error de edicion");
 
                    
 
-                        <div className='field'>
-                            <label className='label'>Contraseña</label>
+                        <div className='form-field'>
+                            <label className='form-label'>Contraseña</label>
                             <div className='control'>
                                 <input
                                 type="password"  
-                                className='input'
+                                className='form-input'
                                 value={password}
                                 onChange={(e)=>setPass(e.target.value)}
                                 placeholder="Pass"
@@ -122,10 +122,11 @@ setErrors("error de edicion");
                         </div>
 
 
-                        <div className='field'>
+                        <div className='form-field'>
                             <button 
                                 type="submit" 
-                                className='boton'
+                                className="boton-perfil"
+                                style={{ marginTop: "2rem" }}
                                 
                             >
                                 Editar
