@@ -23,7 +23,7 @@ const DiagnosticForm= () => {
   const [explain, setExplain] = useState('');
   const [predictionTree, setPredictionTree] = useState('');
   const [scoreTree, setScoreTree] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
     activo_corriente: "",
@@ -87,7 +87,8 @@ const DiagnosticForm= () => {
  
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    setLoading(true);
     try {
        const SEresult = await SystemExpertDiagnosis();
 
@@ -112,7 +113,9 @@ const DiagnosticForm= () => {
               
     } catch (error) {
       console.error('Error al calcular:', error)
-    }
+    }finally {
+    setLoading(false); // ← Desactivar loading
+  }
   }
 
 
@@ -399,14 +402,22 @@ const DiagnosticForm= () => {
         </div>
       </form>
 
-      {score && (
+      {loading && (
+        <div className='loading-class'>
+          <h3 className='title-diagnostic'>Calculando diagnóstico...</h3>
+          <div className="spinner"></div>
+          <p>Analizando tus datos financieros...</p>
+        </div>
+      )}
+
+      {!loading && score && (
         <div>
         <h2 className='title-diagnostic'>Diagnóstico financiero</h2>
         </div>
       )}
 
       <div className='cont-results'>
-      {score && (
+      {!loading &&score && (
         <div className='cont-individual-result'>
         <h3 className='title-diagnostic'>Sistema experto
 
@@ -438,7 +449,7 @@ const DiagnosticForm= () => {
         </div>
       )}
 
-      {scoreTree.length > 0 && predictionTree !== '' && (
+      {!loading && scoreTree.length > 0 && predictionTree !== '' && (
         <div className='cont-individual-result'>
         <h3 className='title-diagnostic'>Aprendizaje máquina
 
@@ -493,7 +504,7 @@ const DiagnosticForm= () => {
       )}
 
 
-      {scoreTree.length > 0 && predictionTree !== '' && score && (
+      {!loading && scoreTree.length > 0 && predictionTree !== '' && score && (
         <div className='cont-individual-result'>
         <h3 className='title-diagnostic'>Semáforo
 
@@ -514,7 +525,7 @@ const DiagnosticForm= () => {
 
       </div>
 
-    {explain && (
+    {!loading && explain && (
       <div className='analysis-main-content'>
       <h2 className='title-diagnostic'>Análisis</h2>
       <Analysis explain={explain} />
