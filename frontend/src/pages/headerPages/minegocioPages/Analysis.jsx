@@ -20,7 +20,7 @@ const Analysis = ({ explain }) => {
         'eficiencia': ['RotacionDeInventario', 'RotacionCuentasPorCobrar', 'RotacionDeActivos'],
         'rentabilidad': ['MargenNeto', 'RendimientoSobreActivos', 'RendimientoSobrePatrimonio']
       };
-
+ 
       const metricas = categorias[chartType] || [];
       return metricas
         .map(metrica => explain[metrica])
@@ -132,10 +132,9 @@ const Analysis = ({ explain }) => {
           )}
 
 
-        <FinancialIndicatorsChart 
-          data={getChartData()} 
-          title={getChartTitle()}
-        />
+          <div className={`div-analysis-chart ${chartType}`}>
+            <FinancialIndicatorsChart data={getChartData()} title={getChartTitle()} />
+          </div>
       </div>
 
 

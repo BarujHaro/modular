@@ -29,7 +29,7 @@ const CustomTick = ({ x, y, payload }) => {
         y={0}
         dy={16}
         textAnchor="middle"
-        fill="#ffffffff"
+        fill="#235fecff"
         style={{ cursor: "help" }}
       >
         {formatLabel(payload.value)}
@@ -95,7 +95,7 @@ const FinancialIndicatorsChart = ({ data, title }) => {
           <YAxis />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
-          <Bar dataKey="value" name="Indicadores">
+          <Bar dataKey="value" name="Indicadores" fill="#235fecff">
             {data.map((entry, index) => (
               <Cell 
                 key={`cell-${index}`} 
