@@ -423,9 +423,10 @@ const DiagnosticForm= () => {
 
                     <span className="info-tooltip-icon">?
                       <span className="info-tooltip-text">
-                        El sistema experto evalúa tus finanzas (liquidez, deudas, eficiencia y rentabilidad), 
-                        les da una calificación y genera un puntaje global sobre la salud de tu negocio.
-
+                        "Explica ¿Qué está pasando?"<br/>
+                        El sistema experto analiza tus indicadores financieros principales (<b>liquidez, endeudamiento, eficiencia y rentabilidad</b>)  
+                        aplicando reglas predefinidas, como lo haría un asesor contable.  
+                        Con base en ellos, calcula un <b>puntaje global</b> que refleja la salud general de tu negocio.
                       </span>
                     </span>
 
@@ -440,7 +441,25 @@ const DiagnosticForm= () => {
 
               <div className='center-info'>
                 <span className="info-tooltip-icon">?
-                   {generateSmartTooltip(explain)}
+                  {/* {generateSmartTooltip(explain)} */}
+                   
+                      <span className="info-tooltip-text">
+                             Este resultado se basa en tus métricas individuales (Liquidez, endeudamiento, eficiencia y rentabilidad)<br/>
+                      🔹 <b>Liquidez</b> muestra tu capacidad para pagar deudas a corto plazo.<br/>
+                      🔹 <b>Endeudamiento</b> indica cuánto dependes de financiamiento externo.<br/>
+                      🔹 <b>Eficiencia</b> refleja qué tan bien usas tus recursos para generar ingresos.<br/>
+                      🔹 <b>Rentabilidad</b> mide las ganancias que obtienes sobre tus inversiones.<br/><br/>
+                      Cada indicador afecta el puntaje final.
+
+                      RESULTADO EXCELENTE (70-100 puntos):
+                      Tu negocio muestra fortalezas sólidas en la mayoría de áreas financieras. 
+
+                      RESULTADO ESTABLE (31-69 puntos): 
+                      Tu negocio funciona adecuadamente pero tiene áreas de oportunidad. 
+
+                      RIESGO DE QUIEBRA (0-30 puntos):
+                      Varios indicadores muestran señales de alerta. 
+                      </span>
                 </span>
               </div>
 
@@ -455,10 +474,11 @@ const DiagnosticForm= () => {
 
                     <span className="info-tooltip-icon">?
                       <span className="info-tooltip-text">
-                          Este modelo analiza la información financiera 
-                          (como liquidez, deudas, ventas e inventarios) y la compara 
-                          con patrones de otros negocios. 
-                          Con eso predice si tu negocio está en riesgo o estable.
+                        "Explica ¿Qué podría pasar?"<br/>
+                        Este modelo fue entrenado con <b>datos históricos de empresas reales</b>.  
+                        Usa algoritmos de aprendizaje automático para comparar tus métricas con patrones previos  
+                        y determinar la <b>probabilidad de riesgo financiero</b> en tu negocio. 
+                        Con eso predice si tu negocio está en riesgo o está fuera de riesgo.
                       </span>
                     </span>
 
@@ -478,23 +498,19 @@ const DiagnosticForm= () => {
           
            <div className='center-info'>
                 <span className="info-tooltip-icon">?
-                    {predictionTree===0?(
-                      <span className="info-tooltip-text">
-                        
-                        El modelo considera que tu negocio <b>no se encuentra en una situación crítica</b>. 
-                        Sin embargo, revisa los indicadores financieros individuales para confirmar 
-                        la estabilidad.
-
-                      </span>
-                    ):(
-                      <span className="info-tooltip-text">
-                        
-                        El modelo estima que tu negocio <b>tiene factores de riesgo financiero</b>. 
-                        Esto se debe a combinaciones de indicadores (ej. alto endeudamiento, baja liquidez o baja rentabilidad). 
-                        Revisa las métricas específicas para entender las causas.
-
-                      </span>
-                    )}
+                    {predictionTree === 0 ? (
+              <span className="info-tooltip-text">
+                Tu negocio se encuentra <b>fuera de riesgo financiero inmediato</b>.  
+                Los patrones de tus indicadores son similares a los de empresas estables.  
+                Aun así, revisa los valores de liquidez y rentabilidad para mantener un crecimiento sano.
+              </span>
+            ) : (
+              <span className="info-tooltip-text">
+                El modelo detecta un <b>riesgo potencial de inestabilidad financiera</b>.  
+                Esto puede deberse a valores bajos en liquidez, alta deuda o baja eficiencia.  
+                Se recomienda fortalecer estas áreas para reducir la probabilidad de quiebra.
+              </span>
+            )}
                 </span>
               </div>
 
@@ -510,10 +526,14 @@ const DiagnosticForm= () => {
 
                     <span className="info-tooltip-icon">?
                       <span className="info-tooltip-text">
-                        El semáforo toma el promedio de los resultados de ambos modelos.<br></br>
-                        🟢 Ambos resultados son positivos<br></br>
-                        🟡 Uno de los resultados es negativo<br></br>
-                        🔴 Ambos resultados son negativos 
+                        El semáforo integra dos visiones complementarias:<br></br>
+
+                        • SISTEMA EXPERTO: Diagnóstico detallado de tu situación actual<br></br>
+                        • APRENDIZAJE MÁQUINA: Predicción de tendencias futuras basada en patrones<br></br>
+                        🟢 Ambos confirman estabilidad<br></br>
+                        🟡 Hay señales mixtas<br></br>
+                        🔴 Coincidencia en alerta <br></br>
+                        Juntos te dan la imagen completa: dónde estás y hacia dónde vas.
                       </span>
                     </span>
 

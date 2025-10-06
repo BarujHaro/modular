@@ -9,6 +9,9 @@ export const transformFinancialData = (explain) => {
     'Rentabilidad': ['MargenNeto', 'RendimientoSobreActivos', 'RendimientoSobrePatrimonio']
   };
 
+ 
+
+
   const resultado = [];
 
   // Calcular promedio por categoría
@@ -22,8 +25,8 @@ export const transformFinancialData = (explain) => {
       
       resultado.push({
         name: categoria,
-        value: Math.round(promedio), // Redondear a entero
-        metrics: metricasFiltradas // Opcional: guardar las métricas originales
+        value: Math.round(promedio),  
+        metrics: metricasFiltradas
       });
     }
   });
